@@ -8,8 +8,8 @@
 ## Ubuntu has dropped openoffice.org-headless package
 ## CentOS by default does not allow apache user to have a shell
 ## If you want this to work on CentOS, then:
-###  sed -i "s|apache:x:48:48:Apache:/var/www:/sbin/nologin|apache:x:48:48:Apache:/var/www:/bin/sh|" /etc/passwd
-###  sed -i "s|www-data|apache|g" /etc/init.d/openoffice
+###  usermod --shell /bin/sh apache
+###  make sure that you change the APACHE_USER to apache
 #
 # it's a service!
 ### BEGIN INIT INFO
@@ -27,6 +27,7 @@
 OOo_HOME=/usr/bin
 SOFFICE_PATH=$OOo_HOME/soffice
 PID_SEARCH="pgrep -nf $SOFFICE_PATH"
+APACHE_USER=www-data
 
 set -e
 
@@ -36,7 +37,7 @@ case "$1" in
      echo "OpenOffice headless server has already started."
     else
       echo "Starting OpenOffice headless server"
-      /bin/su - www-data -c "$SOFFICE_PATH --headless --nologo --nofirststartwizard --accept=\"socket,host=127.0.0.1,port=8100;urp\"" & > /dev/null 2>&1
+      /bin/su - $APACHE_USER -c "$SOFFICE_PATH --headless --nologo --nofirststartwizard --accept=\"socket,host=127.0.0.1,port=8100;urp\"" & > /dev/null 2>&1
     fi
   ;;
 
